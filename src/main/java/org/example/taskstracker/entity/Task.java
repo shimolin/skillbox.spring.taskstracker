@@ -1,9 +1,6 @@
 package org.example.taskstracker.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.example.taskstracker.model.TaskModelRequest;
 import org.example.taskstracker.model.TaskModelResponse;
 import org.example.taskstracker.model.TaskStatus;
@@ -44,19 +41,5 @@ public class Task {
 
     @ReadOnlyProperty
     private Set<User> observers = new HashSet<>();
-
-    public static Task fromRequest(TaskModelRequest model){
-        Task task = new Task();
-        task.setId(model.getId());
-        task.setName(model.getName());
-        task.setDescription(model.getDescription());
-        task.setStatus(model.getStatus());
-        task.setAuthorId(model.getAuthorId());
-        task.setAssigneeId(model.getAssigneeId());
-        if(model.getObserverIds() != null){
-            task.setObserverIds(model.getObserverIds());
-        }
-        return task;
-    }
 
 }

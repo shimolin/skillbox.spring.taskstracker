@@ -18,11 +18,4 @@ public class User {
     private String username;
     private String email;
 
-    public static User from(UserModel model){
-        var user = new User();
-        user.setId(model.getId());
-        user.setUsername(model.getUsername());
-        user.setEmail(model.getEmail());
-        return user;
-    }
 }

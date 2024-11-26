@@ -9,15 +9,9 @@ import org.example.taskstracker.entity.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserModel {
+
     private String id;
     private String username;
     private String email;
 
-    public static UserModel from(User user){
-        var model = new UserModel();
-        model.setId(user.getId());
-        model.setUsername(user.getUsername());
-        model.setEmail(user.getEmail());
-        return model;
-    }
 }

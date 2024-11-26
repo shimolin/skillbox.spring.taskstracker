@@ -2,6 +2,7 @@ package org.example.taskstracker.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.entity.User;
+import org.example.taskstracker.mapper.UserMapper;
 import org.example.taskstracker.model.UserModel;
 import org.example.taskstracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,20 +16,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
+    private final UserMapper userMapper;
 
     public Flux<UserModel> findAll() {
         return repository.findAll()
-                .map(UserModel::from);
+                .map(userMapper::toUserModel);
     }
 
     public Mono<UserModel> findById(String id) {
         return repository.findById(id)
-                .map(UserModel::from);
+                .map(userMapper::toUserModel);
     }
 
     public Flux<UserModel> findAllById(Set<String> id){
         return repository.findAllById(id)
-                .map(UserModel::from);
+                .map(userMapper::toUserModel);
     }
 
     public Mono<UserModel> create(UserModel model) {
@@ -37,7 +39,7 @@ public class UserService {
         user.setUsername(model.getUsername());
         user.setEmail(model.getEmail());
         return repository.save(user)
-                .map(UserModel::from);
+                .map(userMapper::toUserModel);
     }
 
     public Mono<UserModel> update(String id, UserModel model){
@@ -45,8 +47,8 @@ public class UserService {
         return findById(id).flatMap(um ->{
             if(model.getUsername() != null) um.setUsername(model.getUsername());
             if(model.getEmail() != null) um.setEmail(model.getEmail());
-            return repository.save(User.from(um))
-                    .map(UserModel::from);
+            return repository.save(userMapper.toUser(um))//User.from(um))
+                    .map(userMapper::toUserModel);
         });
     }
 
