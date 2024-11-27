@@ -9,6 +9,7 @@ import org.example.taskstracker.service.UserService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;

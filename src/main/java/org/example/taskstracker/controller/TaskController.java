@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.entity.Task;
 import org.example.taskstracker.model.TaskModelRequest;
 import org.example.taskstracker.model.TaskModelResponse;
+import org.example.taskstracker.model.UserModel;
 import org.example.taskstracker.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,11 @@ public class TaskController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{taskId}/author")
+    public Mono<UserModel> getTaskAuthor(@PathVariable String taskId){
+        return service.getTaskAuthor(taskId);
+    }
+
     @PostMapping
     public Mono<TaskModelResponse> create(@RequestBody TaskModelRequest request) {
         return service.create(request);
@@ -36,6 +42,11 @@ public class TaskController {
     @PutMapping("/{id}")
     public Mono<TaskModelResponse> update(@PathVariable String id, @RequestBody TaskModelRequest request) {
         return service.update(id, request);
+    }
+
+    @PutMapping("/{taskId}/addObserver")
+    public Mono<TaskModelResponse> addObserver(@PathVariable String taskId, @RequestParam String observerId){
+        return service.addObsever(taskId, observerId);
     }
 
     @DeleteMapping("/{id}")
