@@ -17,7 +17,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final UserService userService;
     private final TaskMapper taskMapper;
 
     public Flux<TaskModelResponse> findAll() {
@@ -30,7 +29,8 @@ public class TaskService {
     public Mono<TaskModelResponse> findById(String id) {
         return taskRepository.findById(id)
                 .flatMap(task -> taskMapper.enrich(task)
-                        .map(taskMapper::taskToTaskModelResponse));
+                        .map(taskMapper::taskToTaskModelResponse)
+                );
     }
 
     public Mono<TaskModelResponse> create(TaskModelRequest request) {
