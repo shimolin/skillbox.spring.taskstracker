@@ -29,11 +29,6 @@ public class TaskController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{taskId}/author")
-    public Mono<UserModel> getTaskAuthor(@PathVariable String taskId){
-        return service.getTaskAuthor(taskId);
-    }
-
     @PostMapping
     public Mono<TaskModelResponse> create(@RequestBody TaskModelRequest request) {
         return service.create(request);
@@ -46,7 +41,7 @@ public class TaskController {
 
     @PutMapping("/{taskId}/addObserver")
     public Mono<TaskModelResponse> addObserver(@PathVariable String taskId, @RequestParam String observerId){
-        return service.addObsever(taskId, observerId);
+        return service.addObserver(taskId, observerId);
     }
 
     @DeleteMapping("/{id}")

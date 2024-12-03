@@ -1,7 +1,8 @@
 package org.example.taskstracker.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.taskstracker.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.example.taskstracker.model.UserModel;
 import org.example.taskstracker.publisher.UserUpdatesPublisher;
 import org.example.taskstracker.service.UserService;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService service;
     private final UserUpdatesPublisher publisher;
@@ -29,13 +31,13 @@ public class UserController {
     }
 
     @PostMapping
-    public Mono<UserModel> create(@RequestBody UserModel model) {
+    public Mono<UserModel> create(@Valid @RequestBody UserModel model) {
         return service.create(model)
                 .doOnSuccess(publisher::publish);
     }
 
     @PutMapping("/{id}")
-    public Mono<UserModel> update(@PathVariable String id, @RequestBody UserModel model){
+    public Mono<UserModel> update(@PathVariable String id, @RequestBody UserModel model) {
         return service.update(id, model);
     }
 

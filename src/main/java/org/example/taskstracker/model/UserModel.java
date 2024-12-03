@@ -1,9 +1,9 @@
 package org.example.taskstracker.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.taskstracker.entity.User;
 
 @Data
 @AllArgsConstructor
@@ -11,6 +11,7 @@ import org.example.taskstracker.entity.User;
 public class UserModel {
 
     private String id;
+    @NotNull
     private String username;
     private String email;
 
