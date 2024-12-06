@@ -35,7 +35,7 @@ public class TaskController {
 
     @PostMapping("/checkRequest")
     public Mono<Boolean> checkRequest(@RequestBody TaskModelRequest request) {
-        return service.checkRequest(request);
+        return service.checkRequestIds(request);
 
     }
 
