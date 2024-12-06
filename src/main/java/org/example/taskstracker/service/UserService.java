@@ -23,12 +23,17 @@ public class UserService {
                 .map(userMapper::toUserModel);
     }
 
+    public Mono<Boolean> userIsPresent(String userId) {
+        return repository.findById(userId)
+                .hasElement();
+    }
+
     public Mono<UserModel> findById(String id) {
         return repository.findById(id)
                 .map(userMapper::toUserModel);
     }
 
-    public Flux<UserModel> findAllById(Set<String> id){
+    public Flux<UserModel> findAllById(Set<String> id) {
         return repository.findAllById(id)
                 .map(userMapper::toUserModel);
     }
@@ -42,17 +47,17 @@ public class UserService {
                 .map(userMapper::toUserModel);
     }
 
-    public Mono<UserModel> update(String id, UserModel model){
+    public Mono<UserModel> update(String id, UserModel model) {
 
-        return findById(id).flatMap(um ->{
-            if(model.getUsername() != null) um.setUsername(model.getUsername());
-            if(model.getEmail() != null) um.setEmail(model.getEmail());
+        return findById(id).flatMap(um -> {
+            if (model.getUsername() != null) um.setUsername(model.getUsername());
+            if (model.getEmail() != null) um.setEmail(model.getEmail());
             return repository.save(userMapper.toUser(um))//User.from(um))
                     .map(userMapper::toUserModel);
         });
     }
 
-    public Mono<Void> deleteById(String id){
+    public Mono<Void> deleteById(String id) {
         return repository.deleteById(id);
     }
 }

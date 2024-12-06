@@ -12,11 +12,11 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(WebExchangeBindException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(WebExchangeBindException ex){
+    @ExceptionHandler({WebExchangeBindException.class})
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(WebExchangeBindException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError)error).getField();
+            String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });

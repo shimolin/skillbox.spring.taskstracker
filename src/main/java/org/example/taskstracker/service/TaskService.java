@@ -9,6 +9,7 @@ import org.example.taskstracker.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 
 import java.time.Instant;
 import java.util.*;
@@ -16,29 +17,50 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final UserService userService;
 
     public Flux<TaskModelResponse> findAll() {
         return taskRepository.findAll()
-                .flatMap(task -> taskMapper.enrich(task)
-                        .map(taskMapper::taskToTaskModelResponse)
-                );
+                .flatMap(taskMapper::enrich)
+                .map(taskMapper::taskToTaskModelResponse);
     }
 
     public Mono<TaskModelResponse> findById(String id) {
         return taskRepository.findById(id)
-                .flatMap(task -> taskMapper.enrich(task)
-                        .map(taskMapper::taskToTaskModelResponse)
-                );
+                .flatMap(taskMapper::enrich)
+                .map(taskMapper::taskToTaskModelResponse);
     }
 
     public Mono<TaskModelResponse> create(TaskModelRequest request) {
-        Task task = taskMapper.taskModelRequestToTask(request);
-        task.setId(UUID.randomUUID().toString());
-        task.setCreatedAt(Instant.now());
-        Mono<Task> taskMono = Mono.just(task);
-        return taskMono.flatMap(t -> taskRepository.save(t).map(taskMapper::taskToTaskModelResponse));
+
+        //TODO проверить id пользователей в request на существование в таблице users
+
+        return checkRequestIds(request).flatMap(requestIsValid ->{
+
+            if (requestIsValid){
+                Task task = taskMapper.taskModelRequestToTask(request);
+                task.setId(UUID.randomUUID().toString());
+                task.setCreatedAt(Instant.now());
+                Mono<Task> taskMono = Mono.just(task);
+                return taskMono.flatMap(taskRepository::save)
+                        .flatMap(taskMapper::enrich)
+                        .map(taskMapper::taskToTaskModelResponse);
+            }
+            else {
+                return Mono.empty();
+            }
+        });
+
+//        Task task = taskMapper.taskModelRequestToTask(request);
+//        task.setId(UUID.randomUUID().toString());
+//        task.setCreatedAt(Instant.now());
+//        Mono<Task> taskMono = Mono.just(task);
+//        return taskMono.flatMap(taskRepository::save)
+//                .flatMap(taskMapper::enrich)
+//                .map(taskMapper::taskToTaskModelResponse);
     }
 
     public Mono<TaskModelResponse> update(String id, TaskModelRequest request) {
@@ -51,7 +73,9 @@ public class TaskService {
             if (request.getObserverIds() != null) taskForUpdate.setObserverIds(request.getObserverIds());
             taskForUpdate.setUpdatedAt(Instant.now());
             Mono<Task> taskMono = Mono.just(taskForUpdate);
-            return taskMono.flatMap(t -> taskRepository.save(t).map(taskMapper::taskToTaskModelResponse));
+            return taskMono.flatMap(taskRepository::save)
+                    .flatMap(taskMapper::enrich)
+                    .map(taskMapper::taskToTaskModelResponse);
         });
     }
 
@@ -59,7 +83,9 @@ public class TaskService {
         return taskRepository.findById(taskId).flatMap(taskForUpdate -> {
             if (observerId != null) taskForUpdate.getObserverIds().add(observerId);
             Mono<Task> taskMono = Mono.just(taskForUpdate);
-            return taskMono.flatMap(task -> taskRepository.save(task).map(taskMapper::taskToTaskModelResponse));
+            return taskMono.flatMap(taskRepository::save)
+                    .flatMap(taskMapper::enrich)
+                    .map(taskMapper::taskToTaskModelResponse);
         });
     }
 
@@ -67,4 +93,33 @@ public class TaskService {
         return taskRepository.deleteById(id);
     }
 
+    public Mono<Boolean> checkRequestIds(TaskModelRequest request) {
+
+        Mono<Boolean> authorIdIsValid = Mono.just(true);
+        if (request.getAuthorId() != null) {
+            authorIdIsValid = userService.findById(request.getAuthorId()).hasElement();
+        }
+
+        Mono<Boolean> assigneeIdIsValid = Mono.just(true);
+        if (request.getAssigneeId() != null) {
+            assigneeIdIsValid = userService.findById(request.getAssigneeId()).hasElement();
+        }
+
+        Mono<List<Boolean>> observerIdsIsValid = Mono.just(new ArrayList<>());
+
+        if (request.getObserverIds() != null){
+            observerIdsIsValid = Flux.fromIterable(request.getObserverIds()).flatMap(s->{
+                return userService.findById(s).hasElement();
+            }).collectList();
+
+        }
+
+        return Mono.zip(authorIdIsValid, assigneeIdIsValid, observerIdsIsValid).flatMap(data -> {
+            boolean result = data.getT1() && data.getT2();
+            for(Boolean  b :data.getT3()){
+                result = result && b;
+            }
+            return Mono.just(result);
+        });
+    }
 }

@@ -6,19 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.taskstracker.model.UserModel;
 import org.example.taskstracker.publisher.UserUpdatesPublisher;
 import org.example.taskstracker.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -29,15 +22,19 @@ public class UserController {
     private final UserUpdatesPublisher publisher;
 
     @GetMapping
-    public Flux<ResponseEntity<UserModel>> findAll() {
-        return service.findAll()
-                .map(ResponseEntity::ok);
+    public Flux<UserModel> findAll() {
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<UserModel>> findById(@PathVariable String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok);
+    }
+
+    @GetMapping("/isPresent/{id}")
+    public Mono<Boolean> isPresent(@PathVariable String id) {
+        return service.userIsPresent(id);
     }
 
     @PostMapping

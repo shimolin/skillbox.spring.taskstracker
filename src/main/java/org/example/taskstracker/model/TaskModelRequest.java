@@ -17,18 +17,18 @@ public class TaskModelRequest {
 
     private String id;
 
-    @NotBlank(message = "task.name must be not blank!!!")
+    @NotNull(message = "task.name must be not blank!!!")
     private String name;
 
     private String description;
 
-    @NotBlank (message = "task.status must be not blank!!!")
+    @NotNull (message = "task.status must be not blank!!!")
     private TaskStatus status;
 
-    @NotBlank (message = "task.authorId must be not blank!!!")
+    @NotNull (message = "task.authorId must be not blank!!!")
     private String authorId;
 
-    @NotBlank (message = "task.assigneeId must be not blank!!!")
+    @NotNull (message = "task.assigneeId must be not blank!!!")
     private String assigneeId;
 
     private Set<String> observerIds;

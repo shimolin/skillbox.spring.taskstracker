@@ -17,16 +17,14 @@ public class TaskController {
     private final TaskService service;
 
     @GetMapping
-    public Flux<ResponseEntity<TaskModelResponse>> findAll() {
-        return service.findAll()
-                .map(ResponseEntity::ok);
+    public Flux<TaskModelResponse> findAll() {
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<TaskModelResponse>> findById(@PathVariable String id) {
         return service.findById(id)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping
@@ -35,14 +33,20 @@ public class TaskController {
                 .map(ResponseEntity::ok);
     }
 
+    @PostMapping("/checkRequest")
+    public Mono<Boolean> checkRequest(@RequestBody TaskModelRequest request) {
+        return service.checkRequest(request);
+
+    }
+
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<TaskModelResponse>> update(@PathVariable String id, @RequestBody TaskModelRequest request) {
+    public Mono<ResponseEntity<TaskModelResponse>> update(@PathVariable String id, @Valid @RequestBody TaskModelRequest request) {
         return service.update(id, request)
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{taskId}/addObserver")
-    public Mono<ResponseEntity<TaskModelResponse>> addObserver(@PathVariable String taskId, @RequestParam String observerId){
+    public Mono<ResponseEntity<TaskModelResponse>> addObserver(@PathVariable String taskId, @RequestParam String observerId) {
         return service.addObserver(taskId, observerId)
                 .map(ResponseEntity::ok);
     }

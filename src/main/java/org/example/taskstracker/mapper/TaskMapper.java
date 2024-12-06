@@ -1,6 +1,7 @@
 package org.example.taskstracker.mapper;
 
 import org.example.taskstracker.entity.Task;
+import org.example.taskstracker.entity.User;
 import org.example.taskstracker.model.TaskModelRequest;
 import org.example.taskstracker.model.TaskModelResponse;
 import org.example.taskstracker.model.UserModel;
