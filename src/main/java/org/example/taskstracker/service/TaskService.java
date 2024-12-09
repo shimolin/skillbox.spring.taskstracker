@@ -9,7 +9,6 @@ import org.example.taskstracker.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
 
 import java.time.Instant;
 import java.util.*;
@@ -36,56 +35,55 @@ public class TaskService {
 
     public Mono<TaskModelResponse> create(TaskModelRequest request) {
 
-        //TODO проверить id пользователей в request на существование в таблице users
-
-        return checkRequestIds(request).flatMap(requestIsValid ->{
-
-            if (requestIsValid){
+        return checkRequestIds(request).flatMap(requestIsValid -> {
+            if (requestIsValid) {
                 Task task = taskMapper.taskModelRequestToTask(request);
                 task.setId(UUID.randomUUID().toString());
                 task.setCreatedAt(Instant.now());
-                Mono<Task> taskMono = Mono.just(task);
-                return taskMono.flatMap(taskRepository::save)
+                return Mono.just(task).flatMap(taskRepository::save)
                         .flatMap(taskMapper::enrich)
                         .map(taskMapper::taskToTaskModelResponse);
-            }
-            else {
-                return Mono.empty();
+            } else {
+                return Mono.error(new RuntimeException("Task create error!!! User in request not found !!!"));
             }
         });
-
-//        Task task = taskMapper.taskModelRequestToTask(request);
-//        task.setId(UUID.randomUUID().toString());
-//        task.setCreatedAt(Instant.now());
-//        Mono<Task> taskMono = Mono.just(task);
-//        return taskMono.flatMap(taskRepository::save)
-//                .flatMap(taskMapper::enrich)
-//                .map(taskMapper::taskToTaskModelResponse);
     }
 
     public Mono<TaskModelResponse> update(String id, TaskModelRequest request) {
-        return taskRepository.findById(id).flatMap(taskForUpdate -> {
-            if (request.getName() != null) taskForUpdate.setName(request.getName());
-            if (request.getDescription() != null) taskForUpdate.setDescription(request.getDescription());
-            if (request.getStatus() != null) taskForUpdate.setStatus(request.getStatus());
-            if (request.getAuthorId() != null) taskForUpdate.setAuthorId(request.getAuthorId());
-            if (request.getAssigneeId() != null) taskForUpdate.setAssigneeId(request.getAssigneeId());
-            if (request.getObserverIds() != null) taskForUpdate.setObserverIds(request.getObserverIds());
-            taskForUpdate.setUpdatedAt(Instant.now());
-            Mono<Task> taskMono = Mono.just(taskForUpdate);
-            return taskMono.flatMap(taskRepository::save)
-                    .flatMap(taskMapper::enrich)
-                    .map(taskMapper::taskToTaskModelResponse);
+
+        return checkRequestIds(request).flatMap(requestIsValid -> {
+            if (requestIsValid) {
+                return taskRepository.findById(id).flatMap(taskForUpdate -> {
+                    if (request.getName() != null) taskForUpdate.setName(request.getName());
+                    if (request.getDescription() != null) taskForUpdate.setDescription(request.getDescription());
+                    if (request.getStatus() != null) taskForUpdate.setStatus(request.getStatus());
+                    if (request.getAuthorId() != null) taskForUpdate.setAuthorId(request.getAuthorId());
+                    if (request.getAssigneeId() != null) taskForUpdate.setAssigneeId(request.getAssigneeId());
+                    if (request.getObserverIds() != null) taskForUpdate.setObserverIds(request.getObserverIds());
+                    taskForUpdate.setUpdatedAt(Instant.now());
+                    return Mono.just(taskForUpdate).flatMap(taskRepository::save)
+                            .flatMap(taskMapper::enrich)
+                            .map(taskMapper::taskToTaskModelResponse);
+                });
+            } else {
+                return Mono.error(new RuntimeException("Task update error!!! User in request not found !!!"));
+            }
         });
     }
 
     public Mono<TaskModelResponse> addObserver(String taskId, String observerId) {
-        return taskRepository.findById(taskId).flatMap(taskForUpdate -> {
-            if (observerId != null) taskForUpdate.getObserverIds().add(observerId);
-            Mono<Task> taskMono = Mono.just(taskForUpdate);
-            return taskMono.flatMap(taskRepository::save)
-                    .flatMap(taskMapper::enrich)
-                    .map(taskMapper::taskToTaskModelResponse);
+
+        return userService.findById(observerId).hasElement().flatMap(observerIdIsValid -> {
+            if (observerIdIsValid) {
+                return taskRepository.findById(taskId).flatMap(taskForUpdate -> {
+                    if (observerId != null) taskForUpdate.getObserverIds().add(observerId);
+                    return Mono.just(taskForUpdate).flatMap(taskRepository::save)
+                            .flatMap(taskMapper::enrich)
+                            .map(taskMapper::taskToTaskModelResponse);
+                });
+            } else {
+                return Mono.error(new RuntimeException("Task update error!!! ObserverId not found !!!"));
+            }
         });
     }
 
@@ -107,16 +105,15 @@ public class TaskService {
 
         Mono<List<Boolean>> observerIdsIsValid = Mono.just(new ArrayList<>());
 
-        if (request.getObserverIds() != null){
-            observerIdsIsValid = Flux.fromIterable(request.getObserverIds()).flatMap(s->{
-                return userService.findById(s).hasElement();
-            }).collectList();
+        if (request.getObserverIds() != null) {
+            observerIdsIsValid = Flux.fromIterable(request.getObserverIds())
+                    .flatMap(s -> userService.findById(s).hasElement()).collectList();
 
         }
 
         return Mono.zip(authorIdIsValid, assigneeIdIsValid, observerIdsIsValid).flatMap(data -> {
             boolean result = data.getT1() && data.getT2();
-            for(Boolean  b :data.getT3()){
+            for (Boolean b : data.getT3()) {
                 result = result && b;
             }
             return Mono.just(result);
