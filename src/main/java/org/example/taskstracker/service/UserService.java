@@ -33,10 +33,17 @@ public class UserService {
                 .map(userMapper::toUserModel);
     }
 
+    public Mono<User> findByUsername(String username){
+        return repository.findUserByUsername(username);
+    }
+
+
     public Flux<UserModel> findAllById(Set<String> id) {
         return repository.findAllById(id)
                 .map(userMapper::toUserModel);
     }
+
+
 
     public Mono<UserModel> create(UserModel model) {
         User user = new User();
@@ -46,6 +53,15 @@ public class UserService {
         return repository.save(user)
                 .map(userMapper::toUserModel);
     }
+
+//TODO
+//    public AppUser createNewAccount(AppUser user, Role role){
+//        user.setRoles(Collections.singletonList(role));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        role.setUser(user);
+//        return userRepository.save(user);
+//    }
+
 
     public Mono<UserModel> update(String id, UserModel model) {
 
