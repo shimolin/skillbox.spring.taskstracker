@@ -54,15 +54,6 @@ public class UserService {
                 .map(userMapper::toUserModel);
     }
 
-//TODO
-//    public AppUser createNewAccount(AppUser user, Role role){
-//        user.setRoles(Collections.singletonList(role));
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        role.setUser(user);
-//        return userRepository.save(user);
-//    }
-
-
     public Mono<UserModel> update(String id, UserModel model) {
 
         return findById(id).flatMap(um -> {

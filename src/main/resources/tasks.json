@@ -1,0 +1,12 @@
+[
+  {
+    "_class": "org.example.taskstracker.entity.Task",
+    "name": "Task1",
+    "description": "description for task1",
+    "createdAt": "",
+    "status": "TODO",
+    "authorId": "",
+    "assigneeId": "",
+    "observerIds": ["",""]
+  }
+]

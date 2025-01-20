@@ -1,0 +1,42 @@
+[
+  {
+    "_class": "org.example.taskstracker.entity.User",
+    "id": "678858ac92f29b5e8cc3c2a1",
+    "username": "ivanov",
+    "email": "ivanov@mail.ru",
+    "password": "$2a$12$SvfiOWHh6Gxe9c2AMiwyrOz0l0sJCFzwaAgpx0XtLexvX6YMBaQV2",
+    "roles": ["ROLE_MANAGER"]
+  },
+  {
+    "_class": "org.example.taskstracker.entity.User",
+    "id": "678858ac92f29b5e8cc3c2a2",
+    "username": "petrov",
+    "email": "petrov@mail.ru",
+    "password": "$2a$12$SvfiOWHh6Gxe9c2AMiwyrOz0l0sJCFzwaAgpx0XtLexvX6YMBaQV2",
+    "roles": ["ROLE_MANAGER", "ROLE_USER"]
+  },
+  {
+    "_class": "org.example.taskstracker.entity.User",
+    "id": "678858ac92f29b5e8cc3c2a3",
+    "username": "sidorov",
+    "email": "sidorov@mail.ru",
+    "password": "$2a$12$SvfiOWHh6Gxe9c2AMiwyrOz0l0sJCFzwaAgpx0XtLexvX6YMBaQV2",
+    "roles": ["ROLE_USER"]
+  },
+  {
+    "_class": "org.example.taskstracker.entity.User",
+    "id": "678858ac92f29b5e8cc3c2a4",
+    "username": "kuznetsov",
+    "email": "kuznetsov@mail.ru",
+    "password": "$2a$12$SvfiOWHh6Gxe9c2AMiwyrOz0l0sJCFzwaAgpx0XtLexvX6YMBaQV2",
+    "roles": ["ROLE_USER"]
+  },
+  {
+    "_class": "org.example.taskstracker.entity.User",
+    "id": "678858ac92f29b5e8cc3c2a5",
+    "username": "nikolaev",
+    "email": "nikolaev@mail.ru",
+    "password": "$2a$12$SvfiOWHh6Gxe9c2AMiwyrOz0l0sJCFzwaAgpx0XtLexvX6YMBaQV2",
+    "roles": ["ROLE_USER"]
+  }
+]

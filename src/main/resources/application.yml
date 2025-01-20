@@ -3,8 +3,9 @@ spring:
     mongodb:
       uri: mongodb://root:root@localhost:27017/appdatabase?authSource=admin
 
-debug: false
+debug: true
 
 app:
+  populateOnStart: true
   security:
-    type: inMemory
+    type: db

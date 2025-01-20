@@ -3,6 +3,8 @@ package org.example.taskstracker.configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -27,36 +29,54 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder(12);
     }
 
+//    @Bean
+//    @ConditionalOnProperty(prefix = "app.security", name = "type",havingValue = "inMemory")
+//    public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity httpSecurity) {
+//        return buildDefaultHttpSecurity(httpSecurity).build();
+//    }
+//
+//    @Bean
+//    @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "inMemory")
+//    public ReactiveUserDetailsService inMemoryUserDetailsService(PasswordEncoder passwordEncoder){
+//
+//        UserDetails user = User.withUsername("user")
+//                .password(passwordEncoder().encode("12345"))
+//                .roles("USER")
+//                .build();
+//
+//        UserDetails admin = User.withUsername("admin")
+//                .password(passwordEncoder().encode("54321"))
+//                .roles("ADMIN")
+//                .build();
+//
+//        return new MapReactiveUserDetailsService(user, admin);
+//
+//    }
+
     @Bean
-    @ConditionalOnProperty(prefix = "app.security", name = "type",havingValue = "inMemory")
-    public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity httpSecurity) {
-        return buildDefaultHttpSecurity(httpSecurity).build();
+    @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "db")
+    public ReactiveAuthenticationManager authenticationManager(ReactiveUserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
+        var reactiveAuthenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        reactiveAuthenticationManager.setPasswordEncoder(passwordEncoder);
+        return reactiveAuthenticationManager;
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "inMemory")
-    public ReactiveUserDetailsService inMemoryUserDetailsService(PasswordEncoder passwordEncoder){
-
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("12345"))
-                .roles("USER")
+    @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "db")
+    public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity httpSecurity, ReactiveAuthenticationManager authenticationManager){
+        return buildDefaultHttpSecurity(httpSecurity)
+                .authenticationManager(authenticationManager)
                 .build();
-
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("54321"))
-                .roles("ADMIN")
-                .build();
-
-        return new MapReactiveUserDetailsService(user, admin);
-
     }
+
 
     private ServerHttpSecurity buildDefaultHttpSecurity(ServerHttpSecurity httpSecurity) {
         return httpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange((auth) -> auth
-                        .pathMatchers("/api/v1/users/**").permitAll()
-                        .pathMatchers("/api/v1/tasks/**").authenticated()
-                        .anyExchange().authenticated())
+//                        .pathMatchers("/api/v1/users/**").permitAll()
+//                        .pathMatchers("/api/v1/tasks/**").authenticated()
+                        .anyExchange().permitAll()
+                )
                 .httpBasic(Customizer.withDefaults());
     }
 
