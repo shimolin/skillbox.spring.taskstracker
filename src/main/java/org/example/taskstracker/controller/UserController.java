@@ -9,6 +9,8 @@ import org.example.taskstracker.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<UserModel>> create(@Valid @RequestBody UserModel model) {
+    public Mono<ResponseEntity<UserModel>> create(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UserModel model) {
         return service.create(model)
                 .doOnSuccess(publisher::publish)
                 .map(ResponseEntity::ok);

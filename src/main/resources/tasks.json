@@ -1,0 +1,12 @@
+[
+  {
+    "_class": "org.example.taskstracker.entity.Task",
+    "id": "77afacb1-8a62-44e3-ac10-503e782c0792",
+    "name": "Task1",
+    "description": "description for task1",
+    "createdAt": "2025-01-21T00:46:16.250Z",
+    "status": "TODO",
+    "authorId": "678858ac92f29b5e8cc3c2a1",
+    "assigneeId": "678858ac92f29b5e8cc3c2a1"
+  }
+]

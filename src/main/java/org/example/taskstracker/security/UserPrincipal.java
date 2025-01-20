@@ -15,7 +15,10 @@ public class UserPrincipal implements UserDetails {
     private final User user;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream().map(Role::toAuthority).toList();
+//        return user.getRoles().stream().map(Role::toAuthority).toList();
+        return user.getRoles().stream()
+                .map((roleType)-> Role.from(roleType).toAuthority())
+                .toList();
     }
 
     @Override
