@@ -3,7 +3,6 @@ package org.example.taskstracker.security;
 import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.entity.Role;
 import org.example.taskstracker.entity.User;
-import org.example.taskstracker.model.UserModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

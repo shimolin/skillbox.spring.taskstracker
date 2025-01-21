@@ -1,19 +1,16 @@
 package org.example.taskstracker.model;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.taskstracker.entity.Task;
 
-import java.time.Instant;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskModelRequest {
+public class TaskRequest {
 
     private String id;
 

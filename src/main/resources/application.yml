@@ -6,6 +6,6 @@ spring:
 debug: true
 
 app:
-  populateOnStart: true
+  populateOnStart: false
   security:
     type: db

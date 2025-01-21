@@ -3,8 +3,8 @@ package org.example.taskstracker.service;
 import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.entity.Task;
 import org.example.taskstracker.mapper.TaskMapper;
-import org.example.taskstracker.model.TaskModelRequest;
-import org.example.taskstracker.model.TaskModelResponse;
+import org.example.taskstracker.model.TaskRequest;
+import org.example.taskstracker.model.TaskResponse;
 import org.example.taskstracker.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -21,19 +21,19 @@ public class TaskService {
     private final TaskMapper taskMapper;
     private final UserService userService;
 
-    public Flux<TaskModelResponse> findAll() {
+    public Flux<TaskResponse> findAll() {
         return taskRepository.findAll()
                 .flatMap(taskMapper::enrich)
                 .map(taskMapper::taskToTaskModelResponse);
     }
 
-    public Mono<TaskModelResponse> findById(String id) {
+    public Mono<TaskResponse> findById(String id) {
         return taskRepository.findById(id)
                 .flatMap(taskMapper::enrich)
                 .map(taskMapper::taskToTaskModelResponse);
     }
 
-    public Mono<TaskModelResponse> create(TaskModelRequest request) {
+    public Mono<TaskResponse> create(TaskRequest request) {
 
         return checkRequestIds(request).flatMap(requestIsValid -> {
             if (requestIsValid) {
@@ -49,7 +49,7 @@ public class TaskService {
         });
     }
 
-    public Mono<TaskModelResponse> update(String id, TaskModelRequest request) {
+    public Mono<TaskResponse> update(String id, TaskRequest request) {
 
         return checkRequestIds(request).flatMap(requestIsValid -> {
             if (requestIsValid) {
@@ -71,7 +71,7 @@ public class TaskService {
         });
     }
 
-    public Mono<TaskModelResponse> addObserver(String taskId, String observerId) {
+    public Mono<TaskResponse> addObserver(String taskId, String observerId) {
 
         return userService.findById(observerId).hasElement().flatMap(observerIdIsValid -> {
             if (observerIdIsValid) {
@@ -91,7 +91,7 @@ public class TaskService {
         return taskRepository.deleteById(id);
     }
 
-    public Mono<Boolean> checkRequestIds(TaskModelRequest request) {
+    public Mono<Boolean> checkRequestIds(TaskRequest request) {
 
         Mono<Boolean> authorIdIsValid = Mono.just(true);
         if (request.getAuthorId() != null) {

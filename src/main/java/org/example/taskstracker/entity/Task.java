@@ -1,20 +1,13 @@
 package org.example.taskstracker.entity;
 
 import lombok.*;
-import org.example.taskstracker.model.TaskModelRequest;
-import org.example.taskstracker.model.TaskModelResponse;
 import org.example.taskstracker.model.TaskStatus;
-import org.example.taskstracker.model.UserModel;
-import org.example.taskstracker.service.UserService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data

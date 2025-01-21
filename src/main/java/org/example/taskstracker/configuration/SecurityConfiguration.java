@@ -29,33 +29,10 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder(12);
     }
 
-//    @Bean
-//    @ConditionalOnProperty(prefix = "app.security", name = "type",havingValue = "inMemory")
-//    public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity httpSecurity) {
-//        return buildDefaultHttpSecurity(httpSecurity).build();
-//    }
-//
-//    @Bean
-//    @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "inMemory")
-//    public ReactiveUserDetailsService inMemoryUserDetailsService(PasswordEncoder passwordEncoder){
-//
-//        UserDetails user = User.withUsername("user")
-//                .password(passwordEncoder().encode("12345"))
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails admin = User.withUsername("admin")
-//                .password(passwordEncoder().encode("54321"))
-//                .roles("ADMIN")
-//                .build();
-//
-//        return new MapReactiveUserDetailsService(user, admin);
-//
-//    }
 
     @Bean
     @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "db")
-    public ReactiveAuthenticationManager authenticationManager(ReactiveUserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
+    public ReactiveAuthenticationManager authenticationManager(ReactiveUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         var reactiveAuthenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
         reactiveAuthenticationManager.setPasswordEncoder(passwordEncoder);
         return reactiveAuthenticationManager;
@@ -63,7 +40,7 @@ public class SecurityConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "app.security", name = "type", havingValue = "db")
-    public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity httpSecurity, ReactiveAuthenticationManager authenticationManager){
+    public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity httpSecurity, ReactiveAuthenticationManager authenticationManager) {
         return buildDefaultHttpSecurity(httpSecurity)
                 .authenticationManager(authenticationManager)
                 .build();
@@ -73,9 +50,9 @@ public class SecurityConfiguration {
     private ServerHttpSecurity buildDefaultHttpSecurity(ServerHttpSecurity httpSecurity) {
         return httpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange((auth) -> auth
-//                        .pathMatchers("/api/v1/users/**").permitAll()
-//                        .pathMatchers("/api/v1/tasks/**").authenticated()
-                        .anyExchange().permitAll()
+                        .pathMatchers("/api/v1/users/**").hasAnyRole("MANAGER", "USER")
+                        .pathMatchers("/api/v1/tasks/**").hasAnyRole("MANAGER", "USER")
+                        .anyExchange().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
     }

@@ -2,10 +2,10 @@ package org.example.taskstracker.mapper;
 
 import org.example.taskstracker.entity.Task;
 import org.example.taskstracker.entity.User;
-import org.example.taskstracker.model.TaskModelRequest;
-import org.example.taskstracker.model.TaskModelResponse;
-import org.example.taskstracker.model.UserModel;
-import org.example.taskstracker.service.TaskService;
+import org.example.taskstracker.model.TaskRequest;
+import org.example.taskstracker.model.TaskResponse;
+import org.example.taskstracker.model.UserRequest;
+import org.example.taskstracker.model.UserResponse;
 import org.example.taskstracker.service.UserService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +22,22 @@ public abstract class TaskMapper {
     @Autowired
     protected UserMapper userMapper;
 
-    public abstract Task taskModelRequestToTask(TaskModelRequest model);
+    public abstract Task taskModelRequestToTask(TaskRequest model);
 
-    public abstract TaskModelResponse taskToTaskModelResponse(Task task);
+    public abstract TaskResponse taskToTaskModelResponse(Task task);
 
     public Mono<Task> enrich(Task task) {
 
-        Mono<UserModel> author = task.getAuthorId() != null ? userService.findById(task.getAuthorId()) : Mono.just(new UserModel());
-        Mono<UserModel> assignee = task.getAssigneeId() != null ? userService.findById(task.getAssigneeId()) : Mono.just(new UserModel());
-        Mono<List<UserModel>> observers = task.getObserverIds() != null ? userService.findAllById(task.getObserverIds()).collectList() : Mono.just(new ArrayList<>());
+        Mono<User> author = task.getAuthorId() != null ? userService.findById(task.getAuthorId()) : Mono.just(new User());
+        Mono<User> assignee = task.getAssigneeId() != null ? userService.findById(task.getAssigneeId()) : Mono.just(new User());
+        Mono<List<User>> observers = task.getObserverIds() != null ? userService.findAllById(task.getObserverIds()).collectList() : Mono.just(new ArrayList<>());
 
         return Mono.zip(author, assignee, observers).flatMap(data -> {
-            if (task.getAuthorId() != null) task.setAuthor(userMapper.toUser(data.getT1()));
-            if (task.getAssigneeId() != null) task.setAssignee(userMapper.toUser(data.getT2()));
+            if (task.getAuthorId() != null) task.setAuthor(data.getT1());
+            if (task.getAssigneeId() != null) task.setAssignee(data.getT2());
             if (task.getObserverIds() != null) {
-                for (UserModel um : data.getT3()) {
-                    task.getObservers().add(userMapper.toUser(um));
+                for (User u : data.getT3()) {
+                    task.getObservers().add(u);
                 }
             }
             return Mono.just(task);
