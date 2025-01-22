@@ -1,5 +1,6 @@
 package org.example.taskstracker.security;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.entity.Role;
 import org.example.taskstracker.entity.User;
@@ -8,17 +9,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+@Getter
 @RequiredArgsConstructor
 public class UserPrincipal implements UserDetails {
 
     private final User user;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return user.getRoles().stream().map(Role::toAuthority).toList();
         return user.getRoles().stream()
                 .map((roleType)-> Role.from(roleType).toAuthority())
                 .toList();
     }
+
 
     @Override
     public String getPassword() {

@@ -25,7 +25,7 @@ public class Task {
     private TaskStatus status;
     private String authorId;
     private String assigneeId;
-    private Set<String> observerIds;
+    private Set<String> observerIds = new HashSet<>();
 
     @ReadOnlyProperty
     private User author = new User();

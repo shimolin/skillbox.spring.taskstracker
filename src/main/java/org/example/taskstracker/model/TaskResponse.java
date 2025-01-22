@@ -17,8 +17,8 @@ public class TaskResponse {
     private Instant createdAt;
     private Instant updatedAt;
     private TaskStatus status;
-    private UserRequest author;
-    private UserRequest assignee;
-    private Set<UserRequest> observers;
+    private UserResponse author;
+    private UserResponse assignee;
+    private Set<UserResponse> observers;
 
 }

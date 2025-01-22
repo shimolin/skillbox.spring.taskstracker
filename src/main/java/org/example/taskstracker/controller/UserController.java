@@ -41,10 +41,10 @@ public class UserController {
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping("/isPresent/{id}")
-    public Mono<Boolean> isPresent(@PathVariable String id) {
-        return service.userIsPresent(id);
-    }
+//    @GetMapping("/isPresent/{id}")
+//    public Mono<Boolean> isPresent(@PathVariable String id) {
+//        return service.userIsPresent(id);
+//    }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_USER')")

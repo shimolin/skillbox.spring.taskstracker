@@ -4,8 +4,6 @@ import org.example.taskstracker.entity.Task;
 import org.example.taskstracker.entity.User;
 import org.example.taskstracker.model.TaskRequest;
 import org.example.taskstracker.model.TaskResponse;
-import org.example.taskstracker.model.UserRequest;
-import org.example.taskstracker.model.UserResponse;
 import org.example.taskstracker.service.UserService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +20,9 @@ public abstract class TaskMapper {
     @Autowired
     protected UserMapper userMapper;
 
-    public abstract Task taskModelRequestToTask(TaskRequest model);
+    public abstract Task taskRequestToTask(TaskRequest model);
 
-    public abstract TaskResponse taskToTaskModelResponse(Task task);
+    public abstract TaskResponse taskToTaskResponse(Task task);
 
     public Mono<Task> enrich(Task task) {
 

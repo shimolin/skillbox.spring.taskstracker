@@ -4,9 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.taskstracker.model.TaskRequest;
 import org.example.taskstracker.model.TaskResponse;
+import org.example.taskstracker.security.UserPrincipal;
 import org.example.taskstracker.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,21 +35,21 @@ public class TaskController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_MANAGER')")
-    public Mono<ResponseEntity<TaskResponse>> create(@Valid @RequestBody TaskRequest request) {
-        return service.create(request)
+    public Mono<ResponseEntity<TaskResponse>> create(@AuthenticationPrincipal UserPrincipal userDetails, @Valid @RequestBody TaskRequest request) {
+        return service.create(request, userDetails)
                 .map(ResponseEntity::ok);
     }
 
-    @PostMapping("/checkRequest")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public Mono<Boolean> checkRequest(@RequestBody TaskRequest request) {
-        return service.checkRequestIds(request);
-
-    }
+//    @PostMapping("/checkRequest")
+//    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_USER')")
+//    public Mono<Boolean> checkRequest(@RequestBody TaskRequest request) {
+//        return service.checkRequestIds(request);
+//
+//    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER')")
-    public Mono<ResponseEntity<TaskResponse>> update(@PathVariable String id, @Valid @RequestBody TaskRequest request) {
+    public Mono<ResponseEntity<TaskResponse>> update(@PathVariable String id, @RequestBody TaskRequest request) {
         return service.update(id, request)
                 .map(ResponseEntity::ok);
     }

@@ -12,8 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class TaskRequest {
 
-    private String id;
-
     @NotNull(message = "task.name must be not blank!!!")
     private String name;
 
@@ -21,9 +19,6 @@ public class TaskRequest {
 
     @NotNull (message = "task.status must be not blank!!!")
     private TaskStatus status;
-
-    @NotNull (message = "task.authorId must be not blank!!!")
-    private String authorId;
 
     @NotNull (message = "task.assigneeId must be not blank!!!")
     private String assigneeId;
